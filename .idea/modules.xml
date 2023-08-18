@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/Annotation/Annotation.iml" filepath="$PROJECT_DIR$/Annotation/Annotation.iml" />
+      <module fileurl="file://$PROJECT_DIR$/ArrayList/ArrayList.iml" filepath="$PROJECT_DIR$/ArrayList/ArrayList.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Enum/Enum.iml" filepath="$PROJECT_DIR$/Enum/Enum.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Generics/Generics.iml" filepath="$PROJECT_DIR$/Generics/Generics.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/IdeaProjects.iml" filepath="$PROJECT_DIR$/.idea/IdeaProjects.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Interface/Interface.iml" filepath="$PROJECT_DIR$/Interface/Interface.iml" />
+      <module fileurl="file://$PROJECT_DIR$/JavaStudy/JavaStudy.iml" filepath="$PROJECT_DIR$/JavaStudy/JavaStudy.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Lambda/Lambda.iml" filepath="$PROJECT_DIR$/Lambda/Lambda.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Thread/Thread.iml" filepath="$PROJECT_DIR$/Thread/Thread.iml" />
+      <module fileurl="file://$PROJECT_DIR$/ThreadSynchronized/ThreadSynchronized.iml" filepath="$PROJECT_DIR$/ThreadSynchronized/ThreadSynchronized.iml" />
+    </modules>
+  </component>
+</project>

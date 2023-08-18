@@ -1,0 +1,35 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '3.1.2'
+	id 'io.spring.dependency-management' version '1.1.2'
+}
+
+group = 'hello'
+version = '0.0.1-SNAPSHOT'
+
+java {
+	sourceCompatibility = '17'
+}
+
+repositories {
+	mavenCentral()
+}
+
+// dependencies는 아까 Spring Boot, Spring을 start한 사이트에서 add dependencies를 통해
+// 웹사이트를 제작하기 위해서 Spring-web, thymeleaf를 추가했었는데, 그것들이 여기에 추가가 된 것을 확인할 수 있다.
+// 라이브러리라고 봐도 무방하고, Spring-web같은 경우는 웹을 제작하기 위해서 불러왔고, thymeleaf는 html 템플릿을 쉽게 제작하기 위해서 불러왔다.
+// 라이브러리를 단순히 넣었다고 되는것이 아니라, repositories에 있는 mavenCentral()이라는 공개된 사이트에서
+// 라이브러리들을 받아오는 것이라고 보면 된다.
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+//	implementation 'org.springframework.boot:spring-boot-starter-jdbc'
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+
+	runtimeOnly 'com.h2database:h2'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}
