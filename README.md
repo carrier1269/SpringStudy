@@ -120,3 +120,122 @@ eyHhbGci0iJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIi0iIxMjM0NTY30DkwIiwibmFtZSI6IkpvaG4
 3. 서버에 있는 secret_key를 통해서 HMAC256 알고리즘을 통해 암호화를 진행하면 signature가 생성이 되는데, 생성한 signature와 클라이언트에서 제공받은 JWT의 signature와 비교를 한다.
 
 - (!) 이전에 Session에서 서버마다 세선 저장소를 생성함으로써 로드밸런싱을 통해 발생하는 문제가 있었는데, JWT 토큰을 사용하면 secret_key를 알고있으면 해당 서버에서 인증까지 끝마침으로써 암호화된 정보를 주고 받을 수 있기 때문에 Session이 아닌 JWT 토큰을 사용하는 것이다.
+
+#### JWT 프로젝트 설정
+```
+1. Gradle
+// https://mvnrepository.com/artifact/com.auth0/java-jwt
+implementation group: 'com.auth0', name: 'java-jwt', version: '3.16.0'
+
+2. application.yml -> 내가 나중에 application.properties 찾아서 바꿔야댐
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: "jdbc:mysql://localhost:3306/JwtTutorial"
+    username: "root"
+    password: "1234"
+
+  jpa:
+    hibernate:
+      ddl-auto: create
+    database: mysql
+    show-sql: true
+
+3. User 생성 및 열거형 User_roles 생성
+@Data
+@Entity
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class User {
+
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    private String username;
+    private String password;
+    @Enumerated(EnumType.STRING)
+    private USER_ROLES roles;
+
+}
+
+public enum USER_ROLES {
+    ROLE_ADMIN, ROLE_USER
+}
+
+4. SecurityConfig
+@EnableWebSecurity
+public class SecurityConfig extends WebSecurityConfigurerAdapter {
+
+    @Autowired
+    private CorsFilter corsFilter;
+
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        http
+                .csrf().disable()
+                    .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS) // Session을 사용하지 않고, Stateless 서버를 만들겠다는 의미
+                .and()
+                .addFilter(corsFilter)  // Cross-Origin 정책 사용 X 모든 요청 허용 ** @CrossOrigin과의 차이점 : @CrossOrigin은 인증이 없을 때 문제, 그래서 직접 시큐리티 필터에 등록!
+                    .formLogin().disable()
+                    .httpBasic().disable()
+                .authorizeRequests()
+                    .antMatchers("/api/v1/user/**")
+                        .hasAnyRole("USER", "MANAGER", "ADMIN")
+                    .antMatchers("/api/v1/manager/**")
+                        .hasAnyRole("MANAGER", "ADMIN")
+                    .antMatchers("/api/v1/admin/**")
+                        .hasRole("ADMIN")
+                    .anyRequest().permitAll()
+                ;
+    }
+}
+
+5. CorsConfiguration
+@Configuration
+public class CorsConfig {
+
+    @Bean
+    public CorsFilter corsFilter() {
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowCredentials(true);   // 내 서버가 응답을 할 때 응답해준 json을 자바스크립트에서 처리할 수 있게 할지를 설정
+        config.addAllowedOrigin("*");       // 모든 ip에 응답 허용
+        config.addAllowedHeader("*");       // 모든 header에 응답 허용
+        config.addAllowedMethod("*");       // 모든 HTTP Method 요청 허용
+
+         source.registerCorsConfiguration("/api/**", config);    // /api/** 로 들어오는 모든 요청들은 config를 따르도록 등록!
+
+        return new CorsFilter(source);
+    }
+}
+```
+
+- build.gradle에서 implements를 통해서 라이브러리 추가
+- application.properties 설정
+- User 클래스 생성 및 열거형 User_roles 생성
+- SecurityConfig를 통해 user/ or manager/ or adming/ 등등 요청에 따른 권한 설정 및 다른 보안정책 설정
+- CorsConfig를 통해 도메인이 다른 서버로 리소스를 요청할때 CORS 정책을 위반하여 발생하는 에러를 해결한다.
+- CorsConfig Solution -> CorsConfiguration 객체를 생성하여 원하는 요청에 대해서 허용해주면 된다.
+- --> HTTP OPTION으로 예비 요청을 보낸 후, 서버에서 요청에 허용을 한다는 응답을 받으면 GET or POST 방식으로 리소스 요청을 보내는 방법.
+
+#### JWT Token 인증 방식
+- Session을 사용했을 때 서버에 두는 세션 저장소 및 여러 서버일때의 문제가 발생하는 것을 해결할 수 있다.
+- 쿠키를 사용하지 않아도 되기 때문에, 쿠키를 탈취당했을 때 발생하는 보안 취약점들이 사라지게 된다.
+- 서버가 여러대여도 secret_key값만 알고있으면 토큰을 인증할 수 있다.
+
+#### Session은 동일 도메인에서만 !!
+- 서버 도메인이 "www.naver.com"인 경우 a의 도메인이 "111.222..."인 경우 서버로 요청 시 쿠키가 날라가지 않는다. 서버에서 쿠키를 거부.
+- javascript에서 Ajax를 통해 강제로 쿠키를 담아 보낼 수 있는데, 서버에서 HTTP Only를 설정해놓으면, javascript 요청이 들어오면 거부하게 된다.
+- HTTP Only = false로 풀어주게 되면 외부에서 javascript로 장난을 많이 치기 때문에 대부분 HTTP Only = true로 설정하는 편이다.
+
+#### Authorization
+서버로 요청을 보낼 때 요청 헤더에 Authorization : <type><credentials> 를 담아서 보내는데 type에 여러가지가 있지만 대표적으로 두가지가 있다.
+1. Basic
+- 사용자 ID와 PW를 Base64로 인코딩한 값을 토큰으로 사용하는데, 토큰이 노출되면 ID, PW가 노출되는 것이므로 보안에 취약.
+2. Bearer
+- JWT같은 OAuth 토큰을 사용하는데, Basic과 달리 토큰에 ID, PW를 넣지 않는다.
+- 로그인 시 토큰을 부여받고, 이후 요청 헤더에 토큰을 실어서 보낸다.
+- JWT랑 비슷함.
+
+#### Spring Security Filter
+![image](https://github.com/carrier1269/SpringStudy/assets/58325946/14d63e5f-f118-439b-a28f-01d9b1de64c1)
