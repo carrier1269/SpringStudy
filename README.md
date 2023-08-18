@@ -239,3 +239,59 @@ public class CorsConfig {
 
 #### Spring Security Filter
 ![image](https://github.com/carrier1269/SpringStudy/assets/58325946/14d63e5f-f118-439b-a28f-01d9b1de64c1)
+```
+public class MyFilter1 implements Filter {
+    @Override
+    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
+        System.out.println("Filter 1");
+        filterChain.doFilter(servletRequest, servletResponse);  // 다음 필터로 넘어가라는 의미
+    }
+}
+```
+
+- Filter 인터페이스를 구현하고, 해당 필터를 처리하고 다음 필터로 넘겨주는 doFilter 메서드를 호출하면 된다.
+
+SecurityConfig에 추가하는 방법
+```
+http.addFilter(new MyFilter1());
+// 위와 같이 작성하게 되면 "MyFilter1은 SpringSecurityFilterChain에 등록되지 않았으니 등록하고 싶으면 addFilterBefore or addFilterAfter를 사용하라!" 와 같은 에러가 발생한다.
+
+http.addFilterBefore(new MyFilter1(), UsernamePasswordAuthenticationFilter.class);
+// UsernamePasswordAuthenticationFilter 직전에 MyFilter가 걸리도록 한다.
+
+http.addFilterAfter(new MyFilter1(), UsernamePasswordAuthenticationFilter.class);
+// UsernamePasswordAuthenticationFilter 이후에 MyFilter가 걸리도록 한다.
+```
+
+FilterConfig를 생성하여 Spring Bean에 등록하는 방법
+```
+@Configuration
+public class FilterConfig {
+
+    @Bean
+    public FilterRegistrationBean<MyFilter1> filter1() {
+        FilterRegistrationBean<MyFilter1> bean = new FilterRegistrationBean<>(new MyFilter1());
+        bean.addUrlPatterns("/*");  // 모든 요청에 대해서 필터 적용
+        bean.setOrder(0);   // 낮은 숫자일수록 우선순위
+
+        return bean;
+    }
+}
+```
+```
+@Configuration
+public class FilterConfig {
+
+    @Bean
+    public FilterRegistrationBean<MyFilter1> filter1() {
+		...
+        bean.setOrder(0);   // 낮은 숫자일수록 우선순위
+		..
+```
+
+첫 번째에서 SecurityConfig에 등록한 것
+```
+http.addFilterBefore(new MyFilter2(), UsernamePasswordAuthenticationFilter.class)
+```
+
+![image](https://github.com/carrier1269/SpringStudy/assets/58325946/56ef015c-12ae-4168-819a-f5ab06785061)
