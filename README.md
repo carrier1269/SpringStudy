@@ -1,12 +1,12 @@
-# SpringStudy
+### SpringStudy
 
-## 남궁성 자바의 정석
-### https://www.youtube.com/@MasterNKS
-#### 0 ~ 171 수강
+- 남궁성 자바의 정석
+https://www.youtube.com/@MasterNKS
+0 ~ 171 수강
 
-## 김영한 스프링 입문
-### https://www.inflearn.com/course/%EC%8A%A4%ED%94%84%EB%A7%81-%EC%9E%85%EB%AC%B8-%EC%8A%A4%ED%94%84%EB%A7%81%EB%B6%80%ED%8A%B8
-#### 0 ~ 28 수강
+- 김영한 스프링 입문
+https://www.inflearn.com/course/%EC%8A%A4%ED%94%84%EB%A7%81-%EC%9E%85%EB%AC%B8-%EC%8A%A4%ED%94%84%EB%A7%81%EB%B6%80%ED%8A%B8
+0 ~ 28 수강
 
 ## 짤짤이 내용 정리
 ### Session
@@ -32,3 +32,11 @@
  
 ### JWT
 https://iseunghan.tistory.com/356
+
+- TCP / UDP에 대한 간략 설명
+  1. TCP 통신은 데이터를 전송하면 상대가 잘 받았는지 ACK 신호를 통해 응답한다.
+  2. 반면 UDP 통신은 상대가 잘 받았는지 확인하지 않고 데이터를 전송하게 된다.
+  3. UDP가 TCP에 비해 속도는 훨씬 빠르다.
+  4. UDP는 언제 사용하냐면, 중간에 유실되는 데이터가 있더라도 상대방이 인식이 가능한 경우 사용한다.
+  5. 예를 들어서, 초당 24 프레임인 동영상을 전송하는데, 24장의 사진중에 몇장이 유실되었어도 상대방이 동영상을 시청할 때 조금 버벅거릴뿐 영상을 이해할 수 있다.
+  6. 전화를 할때 "안녕 반가워"라고 하는데 데이터가 유실되어서 안녕 반()워라고 들릴 수 있더라도, 상대방은 안녕 반가워라고 인지할 수 있는 경우. 
