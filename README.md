@@ -295,3 +295,78 @@ http.addFilterBefore(new MyFilter2(), UsernamePasswordAuthenticationFilter.class
 ```
 
 ![image](https://github.com/carrier1269/SpringStudy/assets/58325946/56ef015c-12ae-4168-819a-f5ab06785061)
+
+#### 필터를 통해서 요청 헤더 토큰 확인하는 방법
+```
+public class MyFilter3 implements Filter {
+
+    @Override
+    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
+        HttpServletRequest req = (HttpServletRequest) servletRequest;
+        HttpServletResponse res = (HttpServletResponse) servletResponse;
+        res.setCharacterEncoding("utf-8");
+
+        // 만약, token을 검증하여, Controller에 접근 여부 설정!
+        if (req.getMethod().equals("POST")) {
+            String auth_header = req.getHeader("Authorization");
+
+// 앞에서 정리했던 내용중에 헤더 요청을 보내는 방법은 여러가지 방법들이 있지만, 대표적으로 basic과 bearer가 있다.
+// 요청한 헤더에서 토큰값을 검증하여 필터를 거치고, 값이 다르다면 실행되지 않게 만드는 방법.
+
+            if(auth_header.equals("secret")) {
+                filterChain.doFilter(req, res);
+            } else {
+                PrintWriter writer = res.getWriter();
+                writer.println("인증 안됨");
+            }
+        } else {
+        	filterChain.doFilter(servletRequest, servletResponse);
+        }
+    }
+}
+```
+
+#### Postman을 통해 request를 해서 필터 동작을 확인
+![image](https://github.com/carrier1269/SpringStudy/assets/58325946/03eb9074-f47f-4c90-9c65-8e1b93ad4159)
+
+#### 로그인 요청이 아닌 로그인 이후 발급한 JWT 토큰을 통해 필터를 거쳐 클라이언트(사용자)를 검증하는 방법
+![image](https://github.com/carrier1269/SpringStudy/assets/58325946/e3c57cb6-7e4d-4b0a-888c-13bf80232b86)
+이것은 요청 헤더 basic 방식인데, 보안면에서 좋지 않기 때문에 jwt를 사용하는 방법을 해보자.
+
+```
+@Override
+protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
+
+//HttpServletRequest를 통해서 request를 통해 요청한 헤더를 받아오게 됩니다.
+    String jwt_Header = request.getHeader("Authorization");
+
+    // 토큰 값이 올바르게 들어있는지 체크! -> jwt_header값이 null이 아니거나, Bearer로 시작할 때
+    if(jwt_Header != null && jwt_Header.startsWith("Bearer")) {
+
+        // JWT 추출 -> 가져온 jwt_header의 앞에 있는 Bearer 문자열을 공백으로 바꾸어 필요한 값만 사용하도록 하고, trim() 메소드를 사용하여 문자열을 나눕니다.
+        String jwtToken = jwt_Header.replace("Bearer", "").trim();
+
+        // JWT Verify (검증) -> 검증 실패 시 exception 발생
+	// secret_key를 HMAC 알고리즘을 사용하여 가져온 jwtToken의 값과 비교를 하고 갖다면 클레임에서 username을 가져와 문자열의 형태로 만들어 username 변수에 저장합니다.
+        String username = JWT.require(Algorithm.HMAC256("secret")).build().verify(jwtToken).getClaim("username").asString();
+
+        // Verify 통과? -> 서명이 완료되었다는 뜻.
+        // username이 비어있진 않은지 체크
+        if (username != null && !username.equals("")) {
+            UserDetails userDetails = accountService.loadUserByUsername(username);
+
+            // AuthenticationManager로 인증을 하면 실제 로그인을 할때에 필요한 작업이나,
+            // Authentication authenticate = getAuthenticationManager().authenticate(new UsernamePasswordAuthenticationToken(userDetails.getUsername(), userDetails.getPassword(), userDetails.getAuthorities()));
+
+            // 현재 우리는 Token 서명으로 무결성을 검증하였기 때문에 username을 가지고 강제로 Authentication 을 만들어 securityContextHolder에 넣어주면 됩니다.
+            Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails.getUsername(), userDetails.getPassword(), userDetails.getAuthorities());
+            // 세션 저장 (권한 관리를 위해서)
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+        }
+    }
+
+    doFilter(request, response, chain);
+
+}
+```
+
