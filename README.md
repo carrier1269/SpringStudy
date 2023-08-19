@@ -449,3 +449,7 @@ public class Employee {
 - DI -> 내부에서 객체를 생성하는 것이 아닌 외부에서 객체를 생성하여 주입하는 방식.
 - 작동시킬때마다 내부적으로 새로운 객체가 생성이 되는 것을 방지하기 위해서 스프링은 이런 방법을 사용한다.
 - 외부에서 생성한 객체 데이터를 IOC Container라고 함. (학습한 정보가 부족해서 추가적으로 공부해서 보충 예정)
+
+#### 8/19 ++
+https://e-una.tistory.com/72
+dto + entity(//) + multipart data + swagger
