@@ -370,3 +370,77 @@ protected void doFilterInternal(HttpServletRequest request, HttpServletResponse 
 }
 ```
 
+#### Entity
+![image](https://github.com/carrier1269/SpringStudy/assets/58325946/0b1235d7-a437-4d46-b601-e2981dcbe9de)
+- Spring 프로젝트를 보면 Entity를 생성하는 것을 많이 볼수있다.
+- 2차원 테이블의 구조로 이루어진 것을 Entity라고 한다.
+- Entity 클래스를 작성할 때는 애너테이션을 사용하여 @Entity로 클래스 앞에 명시하여 해당 클래스가 Entity임을 명시한다.
+- Entity 일관성 보존을 위해서 Setter의 사용을 지양하는 편이다.
+- JPA에서 정의한 필드를 토대로 테이블을 생헝한다.
+
+#### Entity Annotation
+@Entity
+- 클래스 선언시 해당 클래스가 Entity임을 명시한다.
+- Entity 클래스는 JPA에서 정의한 필드를 기반으로 테이블을 생성한다.
+
+@Builder
+- Entity 객체 생성 시 Builder Pattern을 생성한다.
+
+@AllArgsConstructor
+- 모든 필드를 파라미터로 받는 생성자를 생성한다.
+- 디버깅이 어렵고, 많은 버그들을 발생시킬 수 있으므로 해당 애너테이션 사용을 지양한다.
+- 생성자를 직접 만들고 생성자에 @Builder를 사용하는 것을 권장하는 편이다.
+
+@NoArgsConstructor
+- 파라미터가 없는 기본 생성자를 생성한다.
+- 초기값이 final 필드인경우 컴파일 에러가 발생한다.
+- access -> 속성값이 protected인 경우(@NoArgsConstructor(access = AccessLevel.PROTECTED)), 외부에서 무분별하게 해당 Entity의 객체 생성을 방지한다.
+- public으로 설정할 경우 객체 생성시 안전성 저하를 유발시킨다.
+
+@Getter
+- 필드값 조회를 위한 Getter 생성
+
+@ToString
+- 클래스에서 선언한 모든 필드를 출력하는 toString 메소드를 생성한다.
+- exclude 속성을 사용하면 특정 Field는 출력하지 않도록 할 수 있다.
+
+@Table
+- Entity와 Mapping할 Table을 지정한다.
+1. name(String, Optional) -> mapping할 테이블 이름 지정, default는 Entity이름
+----> Example >> @Table(name = "테이블 이름")
+2. catalog(String, Optional) -> DB 카탈로그 mapping
+3. indexes(index[], Optional) -> DB index mapping
+4. uniqueConstraints(UniqueConstraint[], Optional) -> DDL 생성 시 Unique 제약사항 지정
+
+@ID
+- Entity의 Primary Key값 지정
+
+@GeneratedValue(strategy = GenerationType.IDENTITY)
+- 전에 실습했었던, ID값이 자동으로 지정되는 역할과 같은 비슷한 역할을 한다.
+
+@Column
+1. name(String, Optional) -> Column 이름 지정, default는 해당 객체 이름으로 설정한다.
+2. nullable(Boolean, Optional) -> 해당 필드값이 반드시 입력 받아야 할지 여부를 결정한다. 기본값은 true
+3. length(int, Optional) -> 문자열의 길이를 제한한다. String Type에서만 사용이 가능하다.
+
+@ManyToOne
+- 하나의 Entity와 다른 N개의 Entity간의 관계 형성을 지원한다.
+
+Entity 작성 예시
+```
+@Entity
+@Table(name = "employee") 
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+public class Employee {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id; // 필수 입력 & 10글자 초과 입력불가
+    @Column(nullable = false, length = 10)
+    private String name;
+    @Column
+    private int age; // 객체 이름과 다르게 column 이름 개별지정
+    @Column(name = "salary") 
+    private int pay; 
+}
+```
