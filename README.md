@@ -2,11 +2,11 @@
 
 - 남궁성 자바의 정석
 https://www.youtube.com/@MasterNKS
-0 ~ 171 수강
+0 ~ 171 완료
 
 - 김영한 스프링 입문
 https://www.inflearn.com/course/%EC%8A%A4%ED%94%84%EB%A7%81-%EC%9E%85%EB%AC%B8-%EC%8A%A4%ED%94%84%EB%A7%81%EB%B6%80%ED%8A%B8
-0 ~ 28 수강
+0 ~ 28 완료
 
 ## 짤짤이 내용 정리
 ### Session
@@ -444,3 +444,8 @@ public class Employee {
     private int pay; 
 }
 ```
+
+#### DI / IOC container
+- DI -> 내부에서 객체를 생성하는 것이 아닌 외부에서 객체를 생성하여 주입하는 방식.
+- 작동시킬때마다 내부적으로 새로운 객체가 생성이 되는 것을 방지하기 위해서 스프링은 이런 방법을 사용한다.
+- 외부에서 생성한 객체 데이터를 IOC Container라고 함. (학습한 정보가 부족해서 추가적으로 공부해서 보충 예정)
