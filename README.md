@@ -521,3 +521,7 @@ public class SecurityConfiguration {
 - 근데 jwt 공부할라다 보니까 어떤 문서를 참고해도 @Deprecated된 메소드들이 너무 많다..........
 - 그래서 spring version을 3.0.6으로 마이그레이션했다.
 
+#### Lombok 라이브러리
+- Lombok 플러그인에는 다양한 기능을 내포한 애너테이션들이 있는데,
+- 예를 들어서 클래스를 만들고 해당 필드에 변수들에 대해서 캡슐화를 하기 위해서 getter setter을 위한
+- 생성자를 제작하는데, 이를 @Getter, @Setter 애너테이션을 통해서 자동으로 생성하게 만든다.
