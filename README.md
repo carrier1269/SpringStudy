@@ -453,3 +453,7 @@ public class Employee {
 #### 8/19 ++
 https://e-una.tistory.com/72
 dto + entity(//) + multipart data + swagger
+
+#### 8/23
+spring security + jwt example
+https://velog.io/@jkijki12/Spirng-Security-Jwt-%EB%A1%9C%EA%B7%B8%EC%9D%B8-%EC%A0%81%EC%9A%A9%ED%95%98%EA%B8%B0
