@@ -519,4 +519,5 @@ public class SecurityConfiguration {
 ```
 
 - 근데 jwt 공부할라다 보니까 어떤 문서를 참고해도 @Deprecated된 메소드들이 너무 많다..........
+- 그래서 spring version을 3.0.6으로 마이그레이션했다.
 
