@@ -480,3 +480,43 @@ https://velog.io/@jkijki12/Spirng-Security-Jwt-%EB%A1%9C%EA%B7%B8%EC%9D%B8-%EC%A
 - https://velog.io/@developerjun0615/Spring-RequiredArgsConstructor-%EC%96%B4%EB%85%B8%ED%85%8C%EC%9D%B4%EC%85%98%EC%9D%84-%EC%82%AC%EC%9A%A9%ED%95%9C-%EC%83%9D%EC%84%B1%EC%9E%90-%EC%A3%BC%EC%9E%85
 - gradle에 implementation 'org.projectlombok:lombok' 추가해줘야 lombok애너테이션 사용 가능
 
+#### jwt @Deprecated methods
+- spring 버전이 업데이트 되면서 라이브러리 모듈에 대한 메소드들의 사용 정책이 변경된 것이 많다.
+- 예를 들어서 기존에 코드는 WebSecurityConfigurerAdapter를 상속받았다면
+```
+@Configuration
+public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
+
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        http
+            .authorizeHttpRequests((authz) -> authz
+                .anyRequest().authenticated()
+            )
+            .httpBasic(withDefaults());
+    }
+
+}
+```
+
+- 현재 해당 메소드는 Deprecated되어 버전이 업데이트되면 나중에 사용 불가능하다는 리스크가 있다.
+- 그래서 아래와 같이 코드를 작성하는 것이 변경되었다.
+```
+@Configuration
+public class SecurityConfiguration {
+
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        http
+            .authorizeHttpRequests((authz) -> authz
+                .anyRequest().authenticated()
+            )
+            .httpBasic(withDefaults());
+        return http.build();
+    }
+
+}
+```
+
+- 근데 jwt 공부할라다 보니까 어떤 문서를 참고해도 @Deprecated된 메소드들이 너무 많다..........
+
